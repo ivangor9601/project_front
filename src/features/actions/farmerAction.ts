@@ -1,33 +1,39 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {BASE_URL} from "../../utils/constants.ts";
 
-export const registerClientFetch = createAsyncThunk(
-    "client/registerClientFetch",
+export const registerFarmerFetch = createAsyncThunk(
+    "farmer/registerFarmerFetch",
     async (registerUser, {rejectWithValue}) => {
         try{
-            const response = await fetch(`${BASE_URL}/clients/register`, {
+            const response = await fetch(`${BASE_URL}/farmers/register`, {
                 method: "POST",
                 body: JSON.stringify(registerUser),
                 headers: {
                     "Content-Type": "application/json"
                 }
             });
-            if (!response.ok) {
-                const error = await response.json();
-                return rejectWithValue(error || "Something went wrong");
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                if (!response.ok) {
+                    return rejectWithValue(data || "Something went wrong");
+                }
+                return data;
+            } catch (err) {
+                console.error("Failed to parse JSON:", text);
+                return rejectWithValue("Server returned invalid JSON");
             }
-            return await response.json();
         } catch (e) {
             return e;
         }
     }
 )
 
-export const checkClientEmailFetch = createAsyncThunk(
-    "client/checkClientEmailFetch",
-    async (clientEmail, {rejectWithValue}) => {
+export const checkFarmerEmailFetch = createAsyncThunk(
+    "farmer/checkFarmerEmailFetch",
+    async (farmerEmail, {rejectWithValue}) => {
         try {
-            const response = await fetch(`${BASE_URL}/clients/checkemail/${clientEmail}`, {
+            const response = await fetch(`${BASE_URL}/farmers/checkemail/${farmerEmail}`, {
                 method: 'GET'
             });
             if (!response.ok) {
@@ -41,11 +47,11 @@ export const checkClientEmailFetch = createAsyncThunk(
     }
 )
 
-export const loginClientFetch = createAsyncThunk(
-    "client/loginClientFetch",
+export const loginFarmerFetch = createAsyncThunk(
+    "farmer/loginFarmerFetch",
     async (loginUser, {rejectWithValue}) => {
         try{
-            const response = await fetch(`${BASE_URL}/clients/login`, {
+            const response = await fetch(`${BASE_URL}/farmers/login`, {
                 method: "POST",
                 body: JSON.stringify(loginUser),
                 headers: {

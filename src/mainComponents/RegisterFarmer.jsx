@@ -1,18 +1,17 @@
 import {useState} from "react";
-import {checkClientEmailFetch, registerFetch} from "../features/actions/clientAction.js";
 import {useAppDispatch, useAppSelector} from "../app/hooks.js";
 import {useNavigate} from "react-router-dom";
+import {checkFarmerEmailFetch, registerFarmerFetch} from "../features/actions/farmerAction.js";
 
-const Register = () => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+const RegisterFarmer = () => {
+    const [companyName, setCompanyName] = useState("");
     const [email, setEmail] = useState("");
     const [checkEmail, setCheckEmail] = useState(null);
     const [hasCheckedEmail, setHasCheckedEmail] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [city, setCity] = useState("");
+    const [address, setAddress] = useState("");
     const [empty, setEmpty] = useState({});
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -35,7 +34,7 @@ const Register = () => {
         return false;
     }
 
-    const handleCheckEmail = async () => {
+    const handleCheckEmail = async (flag) => {
         const notValid = validateEmail(email);
         if(notValid) {
             setEmpty(prevState => ({
@@ -43,8 +42,8 @@ const Register = () => {
                 email: notValid
             }))
         } else {
-            setHasCheckedEmail(true);
-            const resultAction = await dispatch(checkClientEmailFetch(email));
+            flag ? setHasCheckedEmail(true) : null;
+            const resultAction = await dispatch(checkFarmerEmailFetch(email));
             if(resultAction.payload) {
                 setCheckEmail(true);
                 setEmpty(prev => ({
@@ -60,8 +59,7 @@ const Register = () => {
 
     const handleClickRegister = async () => {
         const errors = {};
-        if (!firstName.trim()) errors.firstName = "Field must not be empty";
-        if (!lastName.trim()) errors.lastName = "Field must not be empty";
+        if (!companyName.trim()) errors.companyName = "Field must not be empty";
         if (password.length < 8 || password.length > 32) {
             errors.password = "Password must be 8–32 characters long";
         } else if (/^([^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/.test(password)) {
@@ -77,7 +75,7 @@ const Register = () => {
         if (!/^[+]?\d{7,15}$/.test(phoneNumber.trim())) {
             errors.phoneNumber = "Enter a valid phone number";
         }
-        if (!city.trim()) errors.city = "Field must not be empty";
+        if (!address.trim()) errors.address = "Field must not be empty";
         if (Object.keys(errors).length > 0) {
             setEmpty(prev => ({
                 ...prev,
@@ -88,82 +86,50 @@ const Register = () => {
         if(await handleCheckEmail()) {
             return;
         }
-        // const res = await dispatch(checkClientEmailFetch(email));
-        // const isEmailTaken = res.payload;
-        //
-        // setCheckEmail(isEmailTaken);
-        //
-        // if (isEmailTaken) {
-        //     setEmpty(prev => ({
-        //         ...prev,
-        //         email: "Email is not available"
-        //     }));
-        //     return;
-        // }
 
-        const client = {
-            firstName,
-            lastName,
+        const farmer = {
+            companyName,
             password,
             phoneNumber,
-            city,
+            address,
             email
         }
-        const resultAction = await dispatch(registerFetch(client));
+        const resultAction = await dispatch(registerFarmerFetch(farmer));
 
-        if (registerFetch.fulfilled.match(resultAction)) {
+        if (registerFarmerFetch.fulfilled.match(resultAction)) {
             console.log(resultAction);
             navigate("/regsuccess");
-        } else if (registerFetch.rejected.match(resultAction)) {
+        } else if (registerFarmerFetch.rejected.match(resultAction)) {
             console.error("Registration failed:", resultAction.payload || resultAction.error.message);
         }
-        setFirstName("");
-        setLastName("");
+        setCompanyName("");
         setPassword("");
         setConfirmPassword("");
         setEmail("");
         setPhoneNumber("");
-        setCity("");
+        setAddress("");
     }
 
     return (
         <div className="d-flex">
             <div style={{ maxWidth: "500px", width: "100%" }}>
-                <h3 className="mb-4">Register</h3>
+                {/*<h3 className="mb-4">Register</h3>*/}
                 {status.includes("Error") && <p style={{ color: 'red' }}>{status}</p>}
                 <div className="row gy-3">
                     <div className="col-12">
                         <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="name" id="name" value={firstName}
+                            <input type="text" className="form-control border-2" name="name" id="name" value={companyName}
                                    onChange={(e) => {
-                                       setFirstName(e.target.value.trim());
+                                       setCompanyName(e.target.value.trim());
                                        setEmpty(prevState => {
-                                           const {firstName, ...rest} = prevState;
+                                           const {companyName, ...rest} = prevState;
                                            return rest;
                                        });
                                    }}
-                                   placeholder="First Name" required/>
-                            <label>First name</label>
-                            {empty.firstName && (
-                                <small style={{color: "red"}}>{empty.firstName}</small>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="lastname" id="lastname"
-                                   value={lastName}
-                                   onChange={(e) => {
-                                       setLastName(e.target.value.trim());
-                                       setEmpty(prevState => {
-                                           const {lastName, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="Last Name" required/>
-                            <label>Last name</label>
-                            {empty.lastName && (
-                                <small style={{color: "red"}}>{empty.lastName}</small>
+                                   placeholder="Company Name" required/>
+                            <label>Company name</label>
+                            {empty.companyName && (
+                                <small style={{color: "red"}}>{empty.companyName}</small>
                             )}
                         </div>
                     </div>
@@ -179,7 +145,7 @@ const Register = () => {
                                        });
                                    }}
                                    placeholder="Email" required/>
-                            <button onClick={handleCheckEmail}
+                            <button onClick={() => handleCheckEmail(true)}
                                     className={'window-button py-1'}
                                     style={{marginLeft: '5px'}}>Check e-mail availability</button>
                             <label>E-mail</label>
@@ -192,7 +158,7 @@ const Register = () => {
                         )}
                     </div>
                     <div className="col-12">
-                    <div className="form-floating">
+                        <div className="form-floating">
                             <input type="password" className="form-control border-2" name="password" id="password"
                                    value={password}
                                    minLength={8} maxLength={32}
@@ -248,18 +214,18 @@ const Register = () => {
                     </div>
                     <div className="col-12">
                         <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="city" id="city" value={city}
+                            <input type="text" className="form-control border-2" name="address" id="address" value={address}
                                    onChange={(e) => {
-                                       setCity(e.target.value.trim());
+                                       setAddress(e.target.value.trim());
                                        setEmpty(prevState => {
-                                           const {city, ...rest} = prevState;
+                                           const {address, ...rest} = prevState;
                                            return rest;
                                        });
                                    }}
-                                   placeholder="City" required/>
-                            <label>City</label>
-                            {empty.city && (
-                                <small style={{color: "red"}}>{empty.city}</small>
+                                   placeholder="Address" required/>
+                            <label>Address</label>
+                            {empty.address && (
+                                <small style={{color: "red"}}>{empty.address}</small>
                             )}
                         </div>
                     </div>
@@ -274,6 +240,6 @@ const Register = () => {
             </div>
         </div>
     );
-};
+}
 
-export default Register;
+export default RegisterFarmer;

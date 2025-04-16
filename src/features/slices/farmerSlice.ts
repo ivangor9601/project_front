@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit"
-import {checkClientEmailFetch, loginClientFetch, registerClientFetch} from "../actions/clientAction"
+import {registerFarmerFetch, loginFarmerFetch, checkFarmerEmailFetch} from "../actions/farmerAction.ts";
 
-const ClientSlice = createSlice({
-    name: "client",
+const FarmerSlice = createSlice({
+    name: "farmer",
     initialState: {
         data: null,
         status: ""
@@ -14,41 +14,41 @@ const ClientSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(registerClientFetch.pending, (state) => {
+            .addCase(registerFarmerFetch.pending, (state) => {
                 state.status = "Pending...";
             })
-            .addCase(registerClientFetch.fulfilled, (state, action) => {
+            .addCase(registerFarmerFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
                 console.log(state.data);
                 state.status = "Success!";
             })
-            .addCase(registerClientFetch.rejected, (state, action) => {
+            .addCase(registerFarmerFetch.rejected, (state, action) => {
                 state.status = "Register Error: " + action.error.message;
             })
-            .addCase(loginClientFetch.pending, (state) => {
+            .addCase(loginFarmerFetch.pending, (state) => {
                 state.status = "Pending...";
             })
-            .addCase(loginClientFetch.fulfilled, (state, action) => {
+            .addCase(loginFarmerFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
                 console.log(state.data);
                 state.status = "Success!";
             })
-            .addCase(loginClientFetch.rejected, (state, action) => {
+            .addCase(loginFarmerFetch.rejected, (state, action) => {
                 state.status = "Register Error: " + action.error.message;
             })
-            .addCase(checkClientEmailFetch.pending, (state) => {
+            .addCase(checkFarmerEmailFetch.pending, (state) => {
                 state.status = "Pending...";
             })
-            .addCase(checkClientEmailFetch.fulfilled, (state, action) => {
+            .addCase(checkFarmerEmailFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
                 console.log(state.data);
                 state.status = "Success!";
             })
-            .addCase(checkClientEmailFetch.rejected, (state, action) => {
+            .addCase(checkFarmerEmailFetch.rejected, (state, action) => {
                 state.status = "Register Error: " + action.error.message;
             })
     }
 })
 
-export const {deleteUser} = ClientSlice.actions;
-export default ClientSlice;
+export const {deleteUser} = FarmerSlice.actions;
+export default FarmerSlice;

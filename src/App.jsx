@@ -1,12 +1,12 @@
 import './App.css'
-import FirstWindow from "./components/FirstWindow.jsx";
+import FirstWindow from "./mainComponents/FirstWindow.jsx";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
+import Login from "./mainComponents/Login.jsx";
 import {Provider} from "react-redux";
 import {store} from "./app/store.js";
-import RegSuccess from "./components/RegSuccess.jsx";
-import LoginSuccess from "./components/LoginSuccess.jsx";
+import RegSuccess from "./mainComponents/RegSuccess.jsx";
+import LoginSuccess from "./mainComponents/LoginSuccess.jsx";
+import Register from "./mainComponents/Register.jsx";
 
 function App() {
 

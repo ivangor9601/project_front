@@ -1,24 +1,23 @@
 import {useState} from "react";
 import {useAppDispatch} from "../app/hooks.js";
 import {useNavigate} from "react-router-dom";
-import {loginFetch, registerFetch} from "../features/actions/clientAction.js";
 
-const Login = () => {
+const LoginRenderComponent = ({func}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const handleClickLogin = async () => {
-        const client = {
+        const user = {
             email,
             password
         }
-        const result = await dispatch(loginFetch(client));
-        if (loginFetch.fulfilled.match(result)) {
+        const result = await dispatch(func(user));
+        if (func.fulfilled.match(result)) {
             console.log(result);
             navigate("/loginsuccess");
-        } else if (registerFetch.rejected.match(result)) {
+        } else if (func.rejected.match(result)) {
             console.error("Login failed:", result.payload || result.error.message);
         }
         setEmail("");
@@ -28,7 +27,7 @@ const Login = () => {
     return (
         <div className="d-flex">
             <div style={{maxWidth: "500px", width: "100%"}}>
-                <h3 className="mb-4">Login</h3>
+                {/*<h3 className="mb-4">Login</h3>*/}
                 <div className="row gy-3">
                     <div className="col-12">
                         <div className="form-floating">
@@ -65,4 +64,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default LoginRenderComponent

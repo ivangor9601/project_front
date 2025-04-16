@@ -1,8 +1,9 @@
 import type {Action, ThunkAction} from "@reduxjs/toolkit"
 import {combineSlices, configureStore} from "@reduxjs/toolkit"
 import clientSlice from "../features/slices/clientSlice.ts";
+import farmerSlice from "../features/slices/farmerSlice.ts";
 
-const rootReducer = combineSlices(clientSlice)
+const rootReducer = combineSlices(clientSlice, farmerSlice)
 export type RootState = ReturnType<typeof rootReducer>
 
 export const makeStore = (preloadedState?: Partial<RootState>) => {
