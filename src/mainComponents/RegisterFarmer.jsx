@@ -19,7 +19,7 @@ const RegisterFarmer = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { data, status } = useAppSelector((state) => state.client)
+    const { data, status } = useAppSelector((state) => state.farmer)
 
     const handleCheckEmail = async (flag) => {
         const notValid = validateEmail(email);

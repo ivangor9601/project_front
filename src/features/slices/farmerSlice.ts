@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import {registerFarmerFetch, loginFarmerFetch, checkFarmerEmailFetch} from "../actions/farmerAction.ts";
+import {registerFarmerFetch, loginFarmerFetch, checkFarmerEmailFetch} from "../actions/farmerAction";
 
 const FarmerSlice = createSlice({
     name: "farmer",
