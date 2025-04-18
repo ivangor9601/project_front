@@ -1,14 +1,28 @@
 import {useState} from "react";
 import {useAppDispatch} from "../app/hooks.js";
 import {useNavigate} from "react-router-dom";
+import FormField from "../utilComponents/FormField.jsx";
 
 const LoginRenderComponent = ({func}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordCheckBox, setPasswordCheckBox] = useState(false);
+    const [empty, setEmpty] = useState({});
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const handleClickLogin = async () => {
+        const errors = {};
+        if (!email.trim()) errors.email = "Field must not be empty";
+        if (!password.trim()) errors.password = "Field must not be empty";
+        if (Object.keys(errors).length > 0) {
+            setEmpty(prev => ({
+                ...prev,
+                ...errors
+            }));
+            return;
+        }
+
         const user = {
             email,
             password
@@ -22,34 +36,44 @@ const LoginRenderComponent = ({func}) => {
         }
         setEmail("");
         setPassword("");
+        setPasswordCheckBox(false);
     }
 
     return (
         <div className="d-flex">
             <div style={{maxWidth: "500px", width: "100%"}}>
-                {/*<h3 className="mb-4">Login</h3>*/}
                 <div className="row gy-3">
+                    <FormField label="E-mail" name="email" id="email"
+                               type="text" value={email} error={empty.email}
+                               onChange={(e) => {
+                                   setEmail(e.target.value.trim());
+                                   setEmpty(prevState => {
+                                       const {email, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
                     <div className="col-12">
                         <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="email" id="email"
-                                   value={email}
+                            <input type={passwordCheckBox ? "text" : "password"} className="form-control border-2"
+                                   name="password" id="password" value={password}
                                    onChange={(e) => {
-                                       setEmail(e.target.value.trim())
-                                   }}
-                                   placeholder="Email" required/>
-                            <label htmlFor="email">Email</label>
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="password" className="form-control border-2" name="password" id="password"
-                                   value={password}
-                                   onChange={(e) => {
-                                       setPassword(e.target.value.trim())
+                                       setPassword(e.target.value.trim());
+                                       setEmpty(prevState => {
+                                           const {password, ...rest} = prevState;
+                                           return rest;
+                                       });
                                    }}
                                    placeholder="Password" required/>
                             <label htmlFor="password">Password</label>
+                            {empty.password && (
+                                <small style={{color: "red"}}>{empty.password}</small>
+                            )}
                         </div>
+                        <label>
+                            <input type="checkbox" checked={passwordCheckBox} className="me-1"
+                                   onChange={() => setPasswordCheckBox(!passwordCheckBox)}/>
+                            Show password
+                        </label>
                     </div>
                     <div className="col-12">
                         <div className="d-grid">

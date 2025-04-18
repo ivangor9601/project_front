@@ -2,6 +2,8 @@ import {useState} from "react";
 import {checkClientEmailFetch, registerClientFetch} from "../features/actions/clientAction.js";
 import {useAppDispatch, useAppSelector} from "../app/hooks.js";
 import {useNavigate} from "react-router-dom";
+import FormField from "../utilComponents/FormField.jsx";
+import {handlePhoneChange, validateEmail} from "../utils/functions.js";
 
 const RegisterClient = () => {
     const [firstName, setFirstName] = useState("");
@@ -10,6 +12,7 @@ const RegisterClient = () => {
     const [checkEmail, setCheckEmail] = useState(null);
     const [hasCheckedEmail, setHasCheckedEmail] = useState(false);
     const [password, setPassword] = useState("");
+    const [passwordCheckBox, setPasswordCheckBox] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [city, setCity] = useState("");
@@ -18,22 +21,6 @@ const RegisterClient = () => {
     const navigate = useNavigate();
 
     const { data, status } = useAppSelector((state) => state.client)
-
-    const handlePhoneChange = (e) => {
-        const value = e.target.value;
-        if(value === "" || /^[+]?\d*$/.test(value)) {
-            setPhoneNumber(value);
-        }
-    }
-
-    const validateEmail = (email) => {
-        if (!email.trim()) {
-            return "Field must not be empty";
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-            return "Enter a valid email address"
-        }
-        return false;
-    }
 
     const handleCheckEmail = async (flag) => {
         const notValid = validateEmail(email);
@@ -112,49 +99,32 @@ const RegisterClient = () => {
         setEmail("");
         setPhoneNumber("");
         setCity("");
+        setPasswordCheckBox(false);
     }
 
     return (
         <div className="d-flex">
             <div style={{ maxWidth: "500px", width: "100%" }}>
-                {/*<h3 className="mb-4">Register</h3>*/}
                 {status.includes("Error") && <p style={{ color: 'red' }}>{status}</p>}
                 <div className="row gy-3">
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="name" id="name" value={firstName}
-                                   onChange={(e) => {
-                                       setFirstName(e.target.value.trim());
-                                       setEmpty(prevState => {
-                                           const {firstName, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="First Name" required/>
-                            <label>First name</label>
-                            {empty.firstName && (
-                                <small style={{color: "red"}}>{empty.firstName}</small>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="lastname" id="lastname"
-                                   value={lastName}
-                                   onChange={(e) => {
-                                       setLastName(e.target.value.trim());
-                                       setEmpty(prevState => {
-                                           const {lastName, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="Last Name" required/>
-                            <label>Last name</label>
-                            {empty.lastName && (
-                                <small style={{color: "red"}}>{empty.lastName}</small>
-                            )}
-                        </div>
-                    </div>
+                    <FormField label="First name" name="firstName" id="firstName"
+                               type="text" value={firstName} error={empty.firstName}
+                               onChange={(e) => {
+                                   setFirstName(e.target.value.trim());
+                                   setEmpty(prevState => {
+                                       const {firstName, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
+                    <FormField label="Last name" name="lastName" id="lastName"
+                               type="text" value={lastName} error={empty.lastName}
+                               onChange={(e) => {
+                                   setLastName(e.target.value.trim());
+                                   setEmpty(prevState => {
+                                       const {lastName, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
                     <div className="col-12">
                         <div className="form-floating d-flex">
                             <input type="text" className="form-control border-2" name="email" id="email" value={email}
@@ -165,24 +135,25 @@ const RegisterClient = () => {
                                            const {email, ...rest} = prevState;
                                            return rest;
                                        });
+                                       setCheckEmail(null);
                                    }}
                                    placeholder="Email" required/>
                             <button onClick={() => handleCheckEmail(true)}
-                                    className={'window-button py-1'}
-                                    style={{marginLeft: '5px'}}>Check e-mail availability</button>
-                            <label>E-mail</label>
+                                    className={'window-button py-1 ms-2'}>Check e-mail availability
+                            </button>
+                            <label htmlFor="email">E-mail</label>
                         </div>
-                        {!checkEmail && hasCheckedEmail && (
+                        {checkEmail === false && hasCheckedEmail && (
                             <small style={{color: "green"}}>Email is available</small>
                         )}
-                        {((checkEmail &&  hasCheckedEmail) || empty.email) && (
+                        {((checkEmail && hasCheckedEmail) || empty.email) && (
                             <small style={{color: "red"}}>{empty.email}</small>
                         )}
                     </div>
                     <div className="col-12">
-                    <div className="form-floating">
-                            <input type="password" className="form-control border-2" name="password" id="password"
-                                   value={password}
+                        <div className="form-floating">
+                            <input type={passwordCheckBox ? "text" : "password"} className="form-control border-2"
+                                   name="password" id="password" value={password}
                                    minLength={8} maxLength={32}
                                    onChange={(e) => {
                                        setPassword(e.target.value.trim());
@@ -192,65 +163,44 @@ const RegisterClient = () => {
                                        });
                                    }}
                                    placeholder="Password" required/>
-                            <label>Password</label>
+                            <label htmlFor="password">Password</label>
                             {empty.password && (
                                 <small style={{color: "red"}}>{empty.password}</small>
                             )}
                         </div>
+                        <label>
+                            <input type="checkbox" checked={passwordCheckBox} className="me-1"
+                                   onChange={() => setPasswordCheckBox(!passwordCheckBox)}/>
+                            Show password
+                        </label>
                     </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="password" className="form-control border-2" name="confirmPassword" id="confirmPassword"
-                                   value={confirmPassword}
-                                   onChange={(e) => {
-                                       setConfirmPassword(e.target.value.trim());
-                                       setEmpty(prevState => {
-                                           const {confirmPassword, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="Password" required/>
-                            <label>Confirm password</label>
-                            {empty.confirmPassword && (
-                                <small style={{color: "red"}}>{empty.confirmPassword}</small>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="tel" className="form-control border-2" name="phonenumber" id="phonenumber"
-                                   value={phoneNumber}
-                                   onChange={(e) => {
-                                       handlePhoneChange(e);
-                                       setEmpty(prevState => {
-                                           const {phoneNumber, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="Phone number" required/>
-                            <label>Phone number</label>
-                            {empty.phoneNumber && (
-                                <small style={{color: "red"}}>{empty.phoneNumber}</small>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="form-floating">
-                            <input type="text" className="form-control border-2" name="city" id="city" value={city}
-                                   onChange={(e) => {
-                                       setCity(e.target.value.trim());
-                                       setEmpty(prevState => {
-                                           const {city, ...rest} = prevState;
-                                           return rest;
-                                       });
-                                   }}
-                                   placeholder="City" required/>
-                            <label>City</label>
-                            {empty.city && (
-                                <small style={{color: "red"}}>{empty.city}</small>
-                            )}
-                        </div>
-                    </div>
+                    <FormField label="Confirm password" name="confirmPassword" id="confirmPassword"
+                               type="password" value={confirmPassword} error={empty.confirmPassword}
+                               onChange={(e) => {
+                                   setConfirmPassword(e.target.value.trim());
+                                   setEmpty(prevState => {
+                                       const {confirmPassword, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
+                    <FormField label="Phone number" name="phoneNumber" id="phoneNumber"
+                               type="tel" value={phoneNumber} error={empty.phoneNumber}
+                               onChange={(e) => {
+                                   handlePhoneChange(e, setPhoneNumber);
+                                   setEmpty(prevState => {
+                                       const {phoneNumber, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
+                    <FormField label="City" name="city" id="city"
+                               type="text" value={city} error={empty.city}
+                               onChange={(e) => {
+                                   setCity(e.target.value.trim());
+                                   setEmpty(prevState => {
+                                       const {city, ...rest} = prevState;
+                                       return rest;
+                                   })
+                               }}/>
                     <div className="col-12">
                         <div className="d-grid">
                             <button className="window-button py-3 w-100"
