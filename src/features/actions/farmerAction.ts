@@ -63,8 +63,12 @@ export const loginFarmerFetch = createAsyncThunk(
                 return rejectWithValue(error || "Something went wrong");
             }
             return await response.json();
-        } catch (e) {
-            return e;
+        } catch (e: unknown) {
+            let message = "Something went wrong";
+            if (e instanceof Error) {
+                message = e.message;
+            }
+            return rejectWithValue({ message });
         }
     }
 )

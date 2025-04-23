@@ -1,15 +1,26 @@
 import {useState} from "react";
-import {useAppDispatch} from "../app/hooks.js";
+import {useAppDispatch, useAppSelector} from "../app/hooks.js";
 import {useNavigate} from "react-router-dom";
 import FormField from "../utilComponents/FormField.jsx";
 
-const LoginRenderComponent = ({func}) => {
+const LoginRenderComponent = ({func, user}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordCheckBox, setPasswordCheckBox] = useState(false);
     const [empty, setEmpty] = useState({});
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const client = useAppSelector((state) => state.client);
+    const farmer = useAppSelector((state) => state.farmer);
+    let data, status;
+    if(user === 'client') {
+        data = client.data;
+        status = client.status;
+    } else if (user === 'farmer') {
+        data = farmer.data;
+        status = farmer.status;
+    }
 
     const handleClickLogin = async () => {
         const errors = {};
@@ -29,10 +40,9 @@ const LoginRenderComponent = ({func}) => {
         }
         const result = await dispatch(func(user));
         if (func.fulfilled.match(result)) {
-            console.log(result);
             navigate("/loginsuccess");
         } else if (func.rejected.match(result)) {
-            console.error("Login failed:", result.payload || result.error.message);
+            console.error("Login failed:", result);
         }
         setEmail("");
         setPassword("");
@@ -42,6 +52,7 @@ const LoginRenderComponent = ({func}) => {
     return (
         <div className="d-flex">
             <div style={{maxWidth: "500px", width: "100%"}}>
+                {status.includes("Error") && <p style={{ color: 'red' }}>Incorrect login or password</p>}
                 <div className="row gy-3">
                     <FormField label="E-mail" name="email" id="email"
                                type="text" value={email} error={empty.email}

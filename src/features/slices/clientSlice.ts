@@ -19,7 +19,6 @@ const ClientSlice = createSlice({
             })
             .addCase(registerClientFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(registerClientFetch.rejected, (state, action) => {
@@ -30,18 +29,16 @@ const ClientSlice = createSlice({
             })
             .addCase(loginClientFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(loginClientFetch.rejected, (state, action) => {
-                state.status = "Register Error: " + action.error.message;
+                state.status = "Login Error: " + action.error.message;
             })
             .addCase(checkClientEmailFetch.pending, (state) => {
                 state.status = "Pending...";
             })
             .addCase(checkClientEmailFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(checkClientEmailFetch.rejected, (state, action) => {

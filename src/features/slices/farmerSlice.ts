@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import {registerFarmerFetch, loginFarmerFetch, checkFarmerEmailFetch} from "../actions/farmerAction";
+import {registerFarmerFetch, loginFarmerFetch, checkFarmerEmailFetch} from "../actions/farmerAction.ts";
 
 const FarmerSlice = createSlice({
     name: "farmer",
@@ -34,7 +34,8 @@ const FarmerSlice = createSlice({
                 state.status = "Success!";
             })
             .addCase(loginFarmerFetch.rejected, (state, action) => {
-                state.status = "Register Error: " + action.error.message;
+                console.log(action.payload);
+                state.status = "Login Error: " + action.error.message;
             })
             .addCase(checkFarmerEmailFetch.pending, (state) => {
                 state.status = "Pending...";
