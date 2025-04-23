@@ -19,7 +19,6 @@ const FarmerSlice = createSlice({
             })
             .addCase(registerFarmerFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(registerFarmerFetch.rejected, (state, action) => {
@@ -30,7 +29,6 @@ const FarmerSlice = createSlice({
             })
             .addCase(loginFarmerFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(loginFarmerFetch.rejected, (state, action) => {
@@ -42,7 +40,6 @@ const FarmerSlice = createSlice({
             })
             .addCase(checkFarmerEmailFetch.fulfilled, (state, action) => {
                 state.data = action.payload;
-                console.log(state.data);
                 state.status = "Success!";
             })
             .addCase(checkFarmerEmailFetch.rejected, (state, action) => {
